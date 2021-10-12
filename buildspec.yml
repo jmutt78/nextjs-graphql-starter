@@ -1,0 +1,28 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      docker: 18
+  pre_build:
+    commands:
+      - $(aws ecr get-login --no-include-email --region $AWS_REGION)
+      - pip install docker-compose
+  build:
+    commands:
+      # - docker-compose build
+      - docker build ./web -t webstaging
+      - docker build ./server -t serverstaging
+      - docker build ./nginx -t nginx
+  post_build:
+    commands:
+      - docker tag webstaging 810731456698.dkr.ecr.us-east-2.amazonaws.com/qa-staging-web
+      - docker tag serverstaging 810731456698.dkr.ecr.us-east-2.amazonaws.com/qa-staging-server
+      - docker tag nginx 810731456698.dkr.ecr.us-east-2.amazonaws.com/nginx_stage
+      - docker push 810731456698.dkr.ecr.us-east-2.amazonaws.com/qa-staging-web
+      - docker push 810731456698.dkr.ecr.us-east-2.amazonaws.com/qa-staging-server
+      - docker push 810731456698.dkr.ecr.us-east-2.amazonaws.com/nginx_stage
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - "**/*"

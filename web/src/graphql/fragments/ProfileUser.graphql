@@ -1,0 +1,11 @@
+fragment ProfileUser on User {
+  id
+  name
+  email
+  address
+  city
+  state
+  zip
+  ccLast4
+  role
+}
